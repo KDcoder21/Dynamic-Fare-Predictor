@@ -545,7 +545,7 @@ class FederatedTrainer:
             print(f"Training Cluster: {', '.join(cluster)}")
             cluster_weights = []
             for client in cluster:
-                X, y = self.clients_data[client]
+                X_train, y_train, _, _ = self.clients_data[client]
                 model = self._clone_compiled_model()
                 model.set_weights(self.client_weights[client])
                 
