@@ -1,0 +1,32 @@
+why trees are increasing
+I want to see indivual similarity reports 
+and if there is a single client it is also a cluster and should be shown
+and in local training is single client being trained or not? just that it won't be training by sharing gradients.
+Is data same for all clients, how is data being distributed to clients?
+how is global rmse is calculated.
+threshold accuracy then we have to stop adding trees.
+random allocation of data in data window to clients
+I have to see what is full dataset doing?
+what is this final_clustering doing?
+
+improvements
+each client having different datasets - done
+showing accuracy and rmse of each client for every round -  done
+show trend of global accuracy at last. 
+We have to see when is convergence happening.
+use disjoint set for cluster
+catastrophic forgetting
+ant optimization to find best node in cluster.
+accuracy change tracking and stopping.
+if any client shifts from trend in local training how is it detected using gradient descent and how clients share gradients among themselves in cluster.
+different similarity metrics to be analysed.
+client selection within a cluster that shall share it's weight parameters to global server in federated learning.
+reclustering in further global rounds and analysis
+
+important
+add visualization after each phase
+add test for each client
+
+
+
+For eg, there are 4 clients at start each getting 1/4th of dataset for training and testing. first global phase starts which has INITIAL_TRAINING_ROUNDS = 4 rounds in round1 of phase1, each client trains for some time interval and shares the latest weight with the server and server aggregates this weight and sends back to all clients and same happens in round 2,3 but in round4 we collect all weights of all rounds of all clients trained in this round and send to server because this weight vector is useful for clustering. So, server does clustering in this round and clusters are formed and move to phase2(local phase). Clients train in local round then phase3(global phase). In this phase, write a seperate function to select client from each cluster in random(this algo will be changed in future, so if you write it as a seperate function I will change in future) then the same happens for round 1,2 and 3 ,from each we select a client a random and do the weight aggregation and send back to all clients present. In round4 of this phase, I want to add a new client with it's data sourced from same dataset and as same size of other clients but selected in random and in this phase we will train all clients for that same time interval, but old clients which were in cluster sends merged matrices to server and this new server sends a vector of weights.(here since there are 4 clients new client will be client5 let client1 and 3 formed cluster and client2 and 4 formed another cluster, in this round let client1 trained 3 times generating a matrix of size 3*number_of_weights and client3 trained 4 times generating a matrix of size 4*number_of_weights similarly,client2 trained 5 times generating a matrix of size 5*number_of_weights and client4 trained 6 times generating a matrix of size 6*number_of_weights and client5 trained 2 times generating a matrix of size 2*number_of_weights. So, server will get matrices of sizes (3+4)=7 from cluster1 and (5+6)=11 from cluster2 and 2 size from client5. Then, similarity is found as it is and client5 is assigned to new cluster based on similairty threshold. Then local phase(phase 4) happens then global phase(phase5) happens same as phase3. and all phases 7,9 are same as phase3. And phase 6,8,10 are local phases. But in phase 11, we will remove those cluster data and start as new so it will be same as phase1(so phase11 would be same as phase1) and everything above repeats after every RE_CLUSTER_INTERVAL = 10 phases.
